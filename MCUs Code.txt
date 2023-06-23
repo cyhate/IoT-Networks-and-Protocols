@@ -1,0 +1,160 @@
+MCU_FIRE_CONTROL:
+
+function setup() {
+	pinMode(0, INPUT);
+	pinMode(1, OUTPUT);
+	pinMode(2, OUTPUT);
+	pinMode(3, OUTPUT);
+	
+	IoEClient.setup({
+		type: "MicroControllerFire",
+		states: [
+			{
+				name: "Fire Detecter",
+				type: "bool",
+			},
+			{
+				name: "Fire Sprinkler 1",
+				type: "options",
+				options: {
+				"0": "Off",
+				"1": "On"
+			},
+			controllable: true
+			},
+			{
+				name: "Fire Sprinkler 2",
+				type: "options",
+				options: {
+				"0": "Off",
+				"1": "On"
+			},
+			controllable: true
+			},
+			{
+				name: "Siren",
+				type: "options",
+				options: {
+				"0": "Off",
+				"1": "On"
+			},
+			controllable: true
+			}]
+	});
+}
+
+function loop() {
+	var Detecter = digitalRead(0);
+	var FireSprinkler1 = digitalWrite(1);
+	var FireSprinkler2 = customWrite(2);
+	var Siren = customWrite(3);
+	//Serial.println(Detecter);
+	
+	var mt = false;
+	
+	if (Detecter > 900){
+		mt=true;
+		customWrite(1, 1);
+		customWrite(2, 1);
+		customWrite(3, 1);
+		//delay(10);
+	}
+	else {
+	    mt=false
+		customWrite(1, 0);
+		customWrite(2, 0);
+		customWrite(3, 0);
+	}
+	
+	IoEClient.reportStates([Detecter,FireSprinkler1,FireSprinkler2,Siren]);
+}
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+MCU_SECURITY_CONTROL:
+
+function setup() {
+	pinMode(0, INPUT);
+	pinMode(1, OUTPUT);
+	pinMode(2, OUTPUT);
+	pinMode(3, OUTPUT);
+	
+	IoEClient.setup({
+		type: "MicroControllerSecurity",
+		states: [
+			{
+				name: "Motion Detecter",
+				type: "bool",
+			},
+			{
+				name: "Alarm",
+				type: "options",
+				options: {
+				"0": "Off",
+				"1": "On"
+			},
+			controllable: true
+			},
+			{
+				name: "Light",
+				type: "options",
+				options: {
+				"0": "Off",
+				"2": "On"
+			},
+			controllable: true
+			},
+			{
+				name: "Door",
+				type: "options",
+				options: {
+				"0,0": "Unlock",
+				"0,1": "Lock"
+			},
+			controllable: true
+			},
+			{
+				name: "Camera",
+				type: "options",
+				options: {
+				"0": "Off",
+				"1": "On"
+			},
+			controllable: true
+			}]
+	});
+}
+
+function loop() {
+	var motion = digitalRead(0);
+	var Alarm = digitalWrite(1);
+	var Light = customWrite(2);
+	var Door = customWrite(3);
+	var Camera = customWrite(4);
+	//Serial.println(motion);
+	//Serial.println(Alarm);
+	var bool=false;
+	var mt = false;
+	
+	if (motion > 900){
+		mt=true;
+		bool=true;
+		digitalWrite(1, HIGH);
+		customWrite(2, 2);
+		customWrite(3, "0,1");
+		customWrite(4, 1);
+		//delay(10);
+	}
+	else {
+	    mt=false
+	    bool=false;
+		digitalWrite(1, LOW);
+		customWrite(2, 0);
+		customWrite(3, "0,0");
+		customWrite(4, 0);
+	}
+	
+	IoEClient.reportStates([motion,Alarm,Light,Door,Camera]);
+}
